@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {products,unitPrice,cartKey,addCartItem,subtotal,minimumCakeDate,cakeErrors} from '../lib/bakery.ts';
+const zaatar=products[0];
+const item=(addons=[],dough='White',notes='')=>({key:cartKey(zaatar.id,dough,addons,notes),productId:zaatar.id,name:zaatar.name,image:zaatar.image,dough,addons,quantity:1,unitPrice:unitPrice(zaatar,dough,addons),notes});
+test('modifier pricing includes the selected dough and every addon exactly once',()=>{assert.equal(unitPrice(zaatar,'White',[]),2.5);assert.equal(unitPrice(zaatar,'Whole Wheat',['Extra Veg']),4);assert.equal(unitPrice(zaatar,'Oat',['Extra Veg','Labneh on the side','Extra Zaatar']),6.25);assert.equal(unitPrice(zaatar,'White',['Extra Veg','Extra Veg']),3.5);});
+test('identical customizations merge even when addons are selected in a different order',()=>{let cart=addCartItem([],item(['Extra Veg','Extra Zaatar']));cart=addCartItem(cart,item(['Extra Zaatar','Extra Veg']));assert.equal(cart.length,1);assert.equal(cart[0].quantity,2);assert.equal(subtotal(cart),8);});
+test('different doughs and baker notes keep separate basket lines',()=>{let cart=addCartItem([],item([],'White','Extra crispy'));cart=addCartItem(cart,item([],'Whole Wheat','Extra crispy'));cart=addCartItem(cart,item([],'White','Cut in half'));assert.equal(cart.length,3);assert.equal(subtotal(cart),8);});
+test('basket totals include quantities without floating point artifacts',()=>{const cart=[{...item(['Extra Veg'],'Oat'),quantity:3},{...item(),quantity:2}];assert.equal(subtotal(cart),17.75);assert.equal(subtotal([]),0);});
+test('cake minimum date handles month/year boundaries and leap years',()=>{assert.equal(minimumCakeDate(new Date(2026,11,30)),'2027-01-02');assert.equal(minimumCakeDate(new Date(2028,1,27)),'2028-03-01');});
+test('quotation rejects incomplete details and unavailable target dates',()=>{const brief={occasion:'',servings:20,flavor:'Vanilla Bean',filling:'Pistachio Cream',date:'2026-10-10',name:' ',email:'not-an-email',phone:'',notes:'',inspiration:'',files:[]};assert.deepEqual(Object.keys(cakeErrors(brief,'2026-10-12')).sort(),['date','email','name','occasion','phone']);});
+test('quotation accepts a complete brief on the earliest available date',()=>{assert.deepEqual(cakeErrors({occasion:'Wedding',servings:40,flavor:'Pistachio',filling:'Vanilla Buttercream',date:'2026-10-12',name:'Nour Haddad',email:'nour@example.com',phone:'+96171000000',notes:'',inspiration:'The Olive Blossom',files:[]},'2026-10-12'),{});});

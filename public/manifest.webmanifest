@@ -1,0 +1,8 @@
+{
+ "id":"/", "name":"Abou Edmond — Bakery & Cake Studio", "short_name":"Abou Edmond",
+ "description":"Lebanese bakery favorites and a cake studio for your special moments.",
+ "start_url":"/", "scope":"/", "display":"standalone", "background_color":"#faf8f2", "theme_color":"#344536",
+ "icons":[{"src":"/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},{"src":"/icons/icon-maskable.png","sizes":"512x512","type":"image/png","purpose":"maskable"}],
+ "shortcuts":[{"name":"The bakery","url":"/#menu"},{"name":"Cake Studio","url":"/#studio"}],
+ "categories":["food","shopping"], "lang":"en"
+}
